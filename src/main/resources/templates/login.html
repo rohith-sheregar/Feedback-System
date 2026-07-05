@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Feedback System - Sign In</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e90ff;
+            --hover-color: #4682b4;
+            --background-dark: #1a1a1a;
+            --card-background: #2c2c2c;
+            --text-color: #ffffff;
+            --error-color: #ff5555;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--background-dark);
+            margin: 0;
+            color: var(--text-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Animation */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                rgba(30, 144, 255, 0.1) 0%,
+                rgba(30, 144, 255, 0) 70%);
+            animation: gradientMove 15s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes gradientMove {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .login-container {
+            width: 380px;
+            padding: 32px;
+            background: var(--card-background);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(8px);
+            animation: containerAppear 0.6s ease-out;
+        }
+
+        @keyframes containerAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 16px;
+            color: var(--primary-color);
+            animation: titleAppear 0.8s ease-out;
+        }
+
+        @keyframes titleAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 24px;
+            color: var(--text-color);
+            opacity: 0.9;
+            animation: subtitleAppear 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes subtitleAppear {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 0.9;
+                transform: translateX(0);
+            }
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+            animation: inputAppear 0.8s ease-out 0.4s both;
+        }
+
+        @keyframes inputAppear {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            margin: 8px 0;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(30, 144, 255, 0.2);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            animation: buttonAppear 0.8s ease-out 0.6s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes buttonAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 144, 255, 0.3);
+        }
+
+        .error {
+            color: var(--error-color);
+            font-size: 0.9em;
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 85, 85, 0.1);
+            animation: errorShake 0.5s ease-in-out;
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Feedback System</h1>
+        <h2>Sign In</h2>
+        <p th:if="${param.error}" class="error">
+            <i class="fas fa-exclamation-circle"></i>
+            Invalid username, email, or password.
+        </p>
+        <form th:action="@{/login}" method="post">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    placeholder="Username, Email, or USN"
+                    required
+                    autofocus
+                />
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    required
+                />
+            </div>
+            <button type="submit">
+                Login <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+</body>
+</html>
+

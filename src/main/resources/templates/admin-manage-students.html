@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Students</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1e1e2f;
+            color: #fff;
+            padding: 40px;
+            margin: 0;
+        }
+        h2 {
+            color: #66ccff;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #333;
+        }
+        tr:nth-child(even) {
+            background-color: #2a2a3c;
+        }
+        form {
+            background: #2a2a3c;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+        input[type="text"], input[type="email"], select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1rem;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #66ccff;
+            border: none;
+            border-radius: 5px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #33bbff;
+        }
+        .btn-upload {
+            display: inline-block;
+            margin-bottom: 20px;
+            background-color: #66ccff;
+            color: black;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-upload:hover {
+            background-color: #33bbff;
+        }
+        .action-btn {
+            background-color: #ff6666;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .action-btn:hover {
+            background-color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Manage Students</h2>
+
+<!-- ✅ Flash message -->
+<div th:if="${message}" style="margin-bottom:20px; text-align:center; font-weight:bold; color:#00ffcc;">
+    <p th:text="${message}"></p>
+</div>
+
+<!-- ✅ Upload & Delete All Buttons -->
+<div style="margin-bottom: 20px;">
+    <a th:href="@{/admin/upload-students}" class="btn-upload">📤 Upload Students CSV</a>
+    <form th:action="@{/admin/students/delete-all}" method="post" style="display:inline;"
+          onsubmit="return confirm('Are you sure you want to delete ALL students?');">
+        <button type="submit" class="btn-upload" style="background-color:#ff5555;">🗑️ Delete All Students</button>
+    </form>
+</div>
+
+<!-- ✅ Filter Form -->
+<form method="get" th:action="@{/admin/manage-students}">
+    <label for="deptFilter">Department:</label>
+    <select name="deptId" id="deptFilter" onchange="this.form.submit()">
+        <option value="" th:selected="${deptId == null}">All Departments</option>
+        <option th:each="dept : ${depts}"
+                th:value="${dept.deptId}"
+                th:text="${dept.deptName}"
+                th:selected="${deptId == dept.deptId}"></option>
+    </select>
+
+    <label for="semFilter">Semester:</label>
+    <select name="semester" id="semFilter" onchange="this.form.submit()">
+        <option value="" th:selected="${semester == null}">All Semesters</option>
+        <option th:each="sem : ${#numbers.sequence(1,8)}"
+                th:value="${sem}"
+                th:text="${sem}"
+                th:selected="${semester == sem}"></option>
+    </select>
+
+    <label for="sectionFilter">Section:</label>
+    <select name="sectionId" id="sectionFilter" onchange="this.form.submit()">
+        <option value="" th:selected="${sectionId == null}">All Sections</option>
+        <option th:each="section : ${sections}"
+                th:value="${section.sectionId}"
+                th:text="${section.sectionName}"
+                th:selected="${sectionId == section.sectionId}"></option>
+    </select>
+</form>
+
+<!-- ✅ Student Table -->
+<table>
+    <thead>
+    <tr>
+        <th>USN</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Semester</th>
+        <th>Section</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="student : ${students}">
+        <td th:text="${student.usn}">USN</td>
+        <td th:text="${student.name}">Name</td>
+        <td th:text="${student.email}">Email</td>
+        <td th:text="${student.department != null ? student.department.deptName : 'N/A'}">Dept</td>
+        <td th:text="${student.semester}">Sem</td>
+        <td th:text="${student.section != null ? student.section.sectionName : 'N/A'}">Section</td>
+        <td>
+            <form th:action="@{/admin/students/{id}(id=${student.studentId})}" method="post" style="display:inline;">
+                <input type="hidden" name="_method" value="delete"/>
+                <button class="action-btn" type="submit" onclick="return confirm('Delete this student?');">Delete</button>
+            </form>
+        </td>
+    </tr>
+    <tr th:if="${students.size() == 0}">
+        <td colspan="7" style="text-align: center;">No students found.</td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- ✅ Add Student Form -->
+<form th:action="@{/admin/students}" method="post">
+    <h3>Add New Student</h3>
+
+    <label for="usn">USN:</label>
+    <input type="text" id="usn" name="usn" required/>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required/>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required/>
+
+    <label for="deptId">Department:</label>
+    <select id="deptId" name="deptId" required>
+        <option value="" disabled selected>Select department</option>
+        <option th:each="dept : ${depts}" th:value="${dept.deptId}" th:text="${dept.deptName}"></option>
+    </select>
+
+    <label for="semester">Semester:</label>
+    <select id="semester" name="semester" required>
+        <option value="" disabled selected>Select semester</option>
+        <option th:each="sem : ${#numbers.sequence(1,8)}" th:value="${sem}" th:text="${sem}"></option>
+    </select>
+
+    <label for="sectionId">Section:</label>
+    <select id="sectionId" name="sectionId" required>
+        <option value="" disabled selected>Select section</option>
+        <option th:each="section : ${sections}" th:value="${section.sectionId}" th:text="${section.sectionName}"></option>
+    </select>
+
+    <button type="submit">Add Student</button>
+</form>
+
+</body>
+</html>

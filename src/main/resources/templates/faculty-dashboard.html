@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Faculty Dashboard - Feedback System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #ffd700;
+            --background-dark: #121212;
+            --background-light: #1e1e1e;
+            --text-color: #ffffff;
+            --text-secondary: #cccccc;
+        }
+
+        body {
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: var(--background-light);
+            padding: 2rem;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        }
+
+        .faculty-info {
+            margin-bottom: 2rem;
+        }
+
+        .faculty-info h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .logout-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-link:hover {
+            background-color: var(--primary-color);
+            color: var(--background-dark);
+        }
+
+        .course-section {
+            background-color: var(--background-light);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .course-title {
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .feedback-count {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .comments-section {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .comment-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            border: 1px solid #333;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar with faculty info -->
+    <div class="sidebar">
+        <div class="faculty-info">
+            <h2>Faculty Profile</h2>
+            <div class="info-item">
+                <i class="fas fa-user"></i>
+                <span th:text="${faculty.name}">Faculty Name</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <span th:text="${faculty.email}">Email</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-building"></i>
+                <span th:text="${faculty.department != null ? faculty.department.departmentName : 'Department not assigned'}">Department</span>
+            </div>
+        </div>
+        <a th:href="@{/logout}" class="logout-link">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Faculty Dashboard</h1>
+        </div>
+
+        <!-- Course selection -->
+        <select id="courseSelect" onchange="showCourseData(this.value)">
+            <option value="">Select a course...</option>
+            <option th:each="ca : ${courseAssignments}"
+                    th:value="${ca.assignmentId}"
+                    th:text="${ca.course.courseName + ' - ' + ca.section.sectionName}">
+            </option>
+        </select>
+
+        <!-- Dynamic course sections -->
+        <div th:each="ca : ${courseAssignments}" th:id="'course-' + ${ca.assignmentId}"
+             class="course-section" style="display: none;">
+            <div class="course-header">
+                <h2 class="course-title" th:text="${ca.course.courseName + ' - ' + ca.section.sectionName}">Course Name</h2>
+                <span class="feedback-count">
+                    <i class="fas fa-users"></i>
+                    <span th:text="${courseStats[ca.assignmentId].feedbackCount}">0</span> students submitted feedback
+                </span>
+            </div>
+
+            <div class="charts-grid">
+                <div th:each="question : ${questions}" class="chart-container">
+                    <canvas th:id="'chart-' + ${ca.assignmentId} + '-' + ${question.questionId}"></canvas>
+                </div>
+            </div>
+
+            <div class="comments-section">
+                <h3>Student Comments</h3>
+                <div th:each="comment : ${courseStats[ca.assignmentId].comments}" class="comment-item">
+                    <i class="fas fa-comment"></i>
+                    <span th:text="${comment}">Comment text</span>
+                </div>
+                <div th:if="${#lists.isEmpty(courseStats[ca.assignmentId].comments)}" class="comment-item">
+                    No comments available
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Get the statistics data from Thymeleaf
+        const courseStats = /*[[${courseStats}]]*/ {};
+        const questions = /*[[${questions}]]*/ [];
+
+        function showCourseData(courseId) {
+            // Hide all course sections
+            document.querySelectorAll('.course-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            if (courseId) {
+                // Show selected course section
+                const courseSection = document.getElementById('course-' + courseId);
+                if (courseSection) {
+                    courseSection.style.display = 'block';
+                    initializeCharts(courseId);
+                }
+            }
+        }
+
+        function initializeCharts(courseId) {
+            const stats = courseStats[courseId];
+            if (!stats || !stats.questionStats) return;
+
+            questions.forEach(question => {
+                const questionStats = stats.questionStats[question.questionId];
+                if (questionStats) {
+                    const ctx = document.getElementById('chart-' + courseId + '-' + question.questionId);
+                    if (!ctx) return;
+
+                    // Destroy existing chart if it exists
+                    if (ctx.chart) {
+                        ctx.chart.destroy();
+                    }
+
+                    // Get the counts for each rating
+                    const ratingsData = [
+                        parseInt(questionStats['1'] || 0),
+                        parseInt(questionStats['2'] || 0),
+                        parseInt(questionStats['3'] || 0),
+                        parseInt(questionStats['4'] || 0),
+                        parseInt(questionStats['5'] || 0)
+                    ];
+
+                    // Only create chart if there's data
+                    if (ratingsData.some(count => count > 0)) {
+                        // Create pie chart
+                        ctx.chart = new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+                                datasets: [{
+                                    data: ratingsData,
+                                    backgroundColor: [
+                                        '#FF6B6B', // Red for 1 star
+                                        '#FFA06B', // Orange for 2 stars
+                                        '#FFD93D', // Yellow for 3 stars
+                                        '#6BCB77', // Green for 4 stars
+                                        '#4D96FF'  // Blue for 5 stars
+                                    ]
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            color: '#ffffff',
+                                            font: {
+                                                size: 12
+                                            }
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: question.text,
+                                        color: '#ffffff',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        },
+                                        padding: {
+                                            bottom: 20
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.parsed || 0;
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                                return `${label}: ${value} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        // If no data, display a message in the chart container
+                        ctx.parentElement.innerHTML += '<div style="color: #cccccc; text-align: center; padding: 20px;">No feedback data available yet</div>';
+                    }
+                }
+            });
+        }
+
+        // Initialize with first course if available
+        window.addEventListener('load', function() {
+            const courseSelect = document.getElementById('courseSelect');
+            if (courseSelect && courseSelect.value) {
+                showCourseData(courseSelect.value);
+            }
+        });
+    </script>
+</body>
+</html>

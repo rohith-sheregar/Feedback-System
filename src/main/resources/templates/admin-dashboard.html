@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!-- Thymeleaf template: ignore IDE warnings for th:* attributes -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:lang="en">
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body { background: #181a20; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+        h1 { color: #66ccff; text-align: center; margin-top: 32px; }
+        .dashboard-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 32px;
+            margin: 40px 0 32px 0;
+        }
+        .card {
+            background: linear-gradient(135deg, #23263a 70%, #2d3147 100%);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px #000c;
+            padding: 36px 48px;
+            min-width: 220px;
+            text-align: center;
+            transition: transform 0.15s;
+        }
+        .card:hover {
+            transform: translateY(-6px) scale(1.04);
+            box-shadow: 0 8px 32px #000e;
+        }
+        .card h2 { color: #66ccff; margin-bottom: 8px; font-size: 2.5rem; }
+        .card .icon { font-size: 2.8rem; margin-bottom: 10px; }
+        .dashboard-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+        .action-btn {
+            background: linear-gradient(90deg, #66ccff 60%, #33bbff 100%);
+            color: #181a20;
+            border: none;
+            border-radius: 10px;
+            padding: 20px 44px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 12px #0006;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .action-btn:hover {
+            background: linear-gradient(90deg, #33bbff 60%, #66ccff 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        @media (max-width: 900px) {
+            .dashboard-cards { flex-direction: column; align-items: center; }
+            .dashboard-actions { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+<h1>Admin Dashboard</h1>
+<div class="dashboard-cards">
+    <div class="card">
+        <div class="icon">👨‍🎓</div>
+        <h2><span th:text="${studentCount}">0</span></h2>
+        <div>Total Students</div>
+    </div>
+    <div class="card">
+        <div class="icon">📚</div>
+        <h2><span th:text="${courseCount}">0</span></h2>
+        <div>Total Courses</div>
+    </div>
+    <div class="card">
+        <div class="icon">🧑‍🏫</div>
+        <h2><span th:text="${facultyCount}">0</span></h2>
+        <div>Total Faculty</div>
+    </div>
+    <div class="card">
+
+<div class="dashboard-actions">
+    <a th:href="@{/admin/manage-courses}" class="action-btn">Manage Courses & Assignments</a>
+    <a th:href="@{/admin/manage-students}" class="action-btn">Manage Students</a>
+    <a th:href="@{/admin/manage-questions}" class="action-btn">Manage Questions</a>
+</div>
+</body>
+</html>
+

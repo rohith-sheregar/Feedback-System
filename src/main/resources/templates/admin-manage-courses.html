@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Manage Courses</title>
+    <style>
+        body { background-color: #1e1e1e; color: #e0e0e0; font-family: sans-serif; padding: 20px; }
+        h1, h3 { color: #ffffff; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; background-color: #2e2e2e; color: #e0e0e0; }
+        th, td { border: 1px solid #444; padding: 8px; text-align: left; }
+        th { background-color: #3a3a3a; }
+        form { margin-bottom: 20px; }
+        input, select { background-color: #333; color: #f0f0f0; border: 1px solid #555; padding: 6px; border-radius: 4px; }
+        button { background-color: #4caf50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        label { display: block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+<h1>Manage Courses & Assignments</h1>
+
+<!-- Dashboard Summary Cards -->
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:32px;margin-bottom:36px;">
+    <div style="background:linear-gradient(135deg,#23263a 70%,#2d3147 100%);border-radius:14px;box-shadow:0 4px 24px #000c;padding:28px 36px;min-width:180px;text-align:center;">
+        <div style="font-size:2.2rem;margin-bottom:8px;">📚</div>
+        <div style="color:#66ccff;font-size:2rem;font-weight:bold;" th:text="${courses.size()}">0</div>
+        <div style="margin-top:4px;">Courses</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#23263a 70%,#2d3147 100%);border-radius:14px;box-shadow:0 4px 24px #000c;padding:28px 36px;min-width:180px;text-align:center;">
+        <div style="font-size:2.2rem;margin-bottom:8px;">🔢</div>
+        <div style="color:#66ccff;font-size:2rem;font-weight:bold;" th:text="${sections.size()}">0</div>
+        <div style="margin-top:4px;">Sections</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#23263a 70%,#2d3147 100%);border-radius:14px;box-shadow:0 4px 24px #000c;padding:28px 36px;min-width:180px;text-align:center;">
+        <div style="font-size:2.2rem;margin-bottom:8px;">🗂️</div>
+        <div style="color:#66ccff;font-size:2rem;font-weight:bold;" th:text="${assignments.size()}">0</div>
+        <div style="margin-top:4px;">Assignments</div>
+    </div>
+</div>
+
+<!-- Filter-First: Require department and semester selection -->
+<form th:action="@{/admin/manage-courses}" method="get">
+    <h3>Filter by Department & Semester</h3>
+    <label>Department:
+        <select name="deptId" required onchange="this.form.submit()">
+            <option value="" th:selected="${deptId == null}">Select Department</option>
+            <option th:each="d : ${depts}" th:value="${d.deptId}" th:text="${d.deptName}" th:selected="${d.deptId == deptId}"></option>
+        </select>
+    </label>
+    <label>Semester:
+        <select name="semester" required onchange="this.form.submit()">
+            <option value="" th:selected="${semester == null}">Select Semester</option>
+            <option th:each="sem : ${#numbers.sequence(1,8)}" th:value="${sem}" th:text="${sem}" th:selected="${sem == semester}"></option>
+        </select>
+    </label>
+</form>
+
+<!-- Only show the rest if both filters are set -->
+<div th:if="${deptId != null and semester != null}">
+    <!-- Add Course -->
+    <form th:action="@{/admin/courses}" method="post">
+        <h3>Add Course</h3>
+        <input type="hidden" name="deptId" th:value="${deptId}"/>
+        <input type="hidden" name="semester" th:value="${semester}"/>
+        <label>Code: <input name="code" placeholder="Code" required/></label>
+        <label>Name: <input name="name" placeholder="Name" required/></label>
+        <button type="submit">Add Course</button>
+    </form>
+
+    <!-- Add Section -->
+    <form th:action="@{/admin/sections}" method="post">
+        <h3>Add Section</h3>
+        <input type="hidden" name="deptId" th:value="${deptId}"/>
+        <input type="hidden" name="semester" th:value="${semester}"/>
+        <label>Section Name: <input name="sectionName" placeholder="Section (e.g. B)" required/></label>
+        <button type="submit">Add Section</button>
+    </form>
+
+    <!-- Assignment Search/Filter -->
+    <!-- ✂️ Skipping <head> and existing styles for brevity — same as yours -->
+
+    <!-- Assignment Search/Filter -->
+    <form th:action="@{/admin/manage-courses/search}" method="get" style="margin-bottom:20px;">
+        <label>Department:
+            <select name="deptId" th:value="${deptId}">
+                <option value="" th:selected="${deptId == null}">All</option>
+                <option th:each="d : ${depts}" th:value="${d.deptId}" th:text="${d.deptName}" th:selected="${d.deptId == deptId}"></option>
+            </select>
+        </label>
+        <label>Semester:
+            <select name="semester" th:value="${semester}">
+                <option value="" th:selected="${semester == null}">All</option>
+                <option th:each="sem : ${#numbers.sequence(1,8)}" th:value="${sem}" th:text="${sem}" th:selected="${sem == semester}"></option>
+            </select>
+        </label>
+        <label>Section:
+            <select name="sectionId" th:value="${sectionId}">
+                <option value="" th:selected="${sectionId == null}">All</option>
+                <option th:each="s : ${sections}"
+                        th:value="${s.sectionId}"
+                        th:text="${s.sectionName + ' - Sem ' + s.semester}"
+                        th:selected="${s.sectionId == sectionId}">
+                </option>
+            </select>
+        </label>
+        <button type="submit">Search Assignments</button>
+    </form>
+
+    <!-- Assignment Table -->
+    <h3>Current Assignments</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Course</th>
+            <th>Section</th>
+            <th>Faculty</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${assignments}">
+            <td th:text="${a.course.courseCode} + ' - ' + ${a.course.courseName}"></td>
+            <td th:text="${a.section.sectionName + ' - Sem ' + a.section.semester}"></td>
+            <td th:text="${a.faculty.name}"></td>
+            <td>
+                <a th:href="@{/admin/assign/edit(assignmentId=${a.assignmentId})}" style="margin-right:8px;">Edit</a>
+                <form th:action="@{/admin/assign/delete}" method="post" style="display:inline;">
+                    <input type="hidden" name="assignmentId" th:value="${a.assignmentId}"/>
+                    <input type="hidden" name="deptId" th:value="${deptId}"/>
+                    <input type="hidden" name="semester" th:value="${semester}"/>
+                    <button type="submit" onclick="return confirm('Remove this assignment?');">Remove</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${assignments.size() == 0}">
+            <td colspan="4" style="text-align:center;">No assignments found.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Assign Faculty -->
+    <form th:action="@{/admin/assign}" method="post">
+        <h3>Assign Faculty</h3>
+        <input type="hidden" name="deptId" th:value="${deptId}"/>
+        <input type="hidden" name="semester" th:value="${semester}"/>
+        <label>Course:
+            <select name="courseId" required>
+                <option th:each="c : ${courses}" th:value="${c.courseId}" th:text="${c.courseCode} + ' - ' + ${c.courseName}"></option>
+            </select>
+        </label>
+        <label>Section:
+            <select name="sectionId" required>
+                <option th:each="s : ${sections}"
+                        th:value="${s.sectionId}"
+                        th:text="${s.sectionName + ' - Sem ' + s.semester}">
+                </option>
+            </select>
+        </label>
+        <label>Faculty:
+            <select name="facultyId" required>
+                <option th:each="f : ${faculty}" th:value="${f.facultyId}" th:text="${f.name}"></option>
+            </select>
+        </label>
+        <button type="submit">Assign</button>
+    </form>
+
+    </td>
+        </tr>
+        <tr th:if="${assignments.size() == 0}">
+            <td colspan="4" style="text-align:center;">No assignments found.</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+</div>
+</body>
+</html>

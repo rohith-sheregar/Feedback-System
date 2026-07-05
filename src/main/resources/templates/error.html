@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error - Feedback System</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .error-container {
+            background-color: #1e1e1e;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #ff4444;
+            margin-bottom: 1rem;
+        }
+        .error-message {
+            color: #cccccc;
+            margin-bottom: 2rem;
+        }
+        .back-button {
+            background-color: #ffd700;
+            color: #121212;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-button:hover {
+            background-color: #ffed4a;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1>Oops! Something went wrong</h1>
+        <div class="error-message">
+            <p th:if="${error}" th:text="${error}"></p>
+            <p th:if="${message}" th:text="${message}"></p>
+            <p th:if="${trace}" th:text="${trace}"></p>
+            <p th:unless="${error} or ${message}">An unexpected error occurred. Please try again later.</p>
+        </div>
+        <a href="/login" class="back-button">Back to Login</a>
+    </div>
+</body>
+</html>
+
