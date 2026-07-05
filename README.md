@@ -2,7 +2,7 @@
 
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
 ![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
-![Java 17](https://img.shields.io/badge/Java_17-ED8B00?style=for-the-badge&logo=java&logoColor=white)
+![Java 21](https://img.shields.io/badge/Java_21-ED8B00?style=for-the-badge&logo=java&logoColor=white)
 ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=Thymeleaf&logoColor=white)
 
 A comprehensive, robust, and secure web-based application designed to streamline the academic feedback process for colleges and universities.
@@ -27,7 +27,7 @@ The College Feedback System bridges the gap between students, faculty, and admin
 Follow these instructions to get a copy of the project up and running on your local machine.
 
 ### Prerequisites
-- [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) or higher
+- [Java 21](https://www.oracle.com/java/technologies/downloads/#java21) or higher
 - [Maven](https://maven.apache.org/download.cgi)
 - [MySQL](https://dev.mysql.com/downloads/mysql/) Server
 
