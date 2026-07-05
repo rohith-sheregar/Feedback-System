@@ -26,6 +26,7 @@ The core orchestrator of the platform.
 *   **Course Assignments:** Assign a faculty member to teach a specific course in a specific section.
 *   **Manage Questionnaire:** Dynamically build and edit the rating questions that students will answer (e.g., "How would you rate the teaching style?"). 
 *   **Bulk Actions:** Upload a CSV to bulk-add students or instantly wipe all student data at the end of an academic year.
+    *   *Required CSV headers:* `usn`, `name`, `email`, `password`, `dept_id`, `semester`, `section`
 
 ### 2. 👩‍🏫 Faculty (`/faculty/dashboard`)
 The reviewers of the feedback.
