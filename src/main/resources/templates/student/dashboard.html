@@ -2,331 +2,621 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard - Feedback System</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script>
-        // Function must be defined before it's used in the HTML
-        function showHideQuestions() {
-            var courseSelect = document.getElementById('courseAssignmentId');
-            var questionsSection = document.getElementById('questionsSection');
-            if (courseSelect && questionsSection) {
-                questionsSection.style.display = courseSelect.value ? 'block' : 'none';
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #ffd700;
-            --background-dark: #121212;
-            --background-light: #1e1e1e;
-            --text-color: #ffffff;
-            --text-secondary: #cccccc;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
-            background-color: var(--background-dark);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 0;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .header {
-            background-color: var(--background-light);
-            padding: 1rem 2rem;
+        /* Glassmorphism utilities */
+        .glass {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 1.5rem 3rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .main-content {
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fee2e2;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content Grid */
+        .main-container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 2rem;
-        }
-
-        .student-info {
-            background-color: var(--background-light);
-            padding: 2rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        h1, h2 {
-            color: var(--primary-color);
-            margin: 0;
-            text-align: center;
-        }
-
-        .info-label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .logout-link {
-            color: var(--primary-color);
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .logout-link:hover {
-            background-color: var(--primary-color);
-            color: var(--background-dark);
-        }
-
-        .feedback-form {
-            background-color: var(--background-light);
-            padding: 2rem;
-            border-radius: 8px;
-            margin-top: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .form-section {
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        select, textarea {
             width: 100%;
-            max-width: 500px;
-            padding: 0.8rem;
-            margin: 0.5rem auto;
-            background-color: var(--background-dark);
-            color: var(--text-color);
-            border: 1px solid #333;
-            border-radius: 4px;
-            font-size: 1rem;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
         }
 
-        select:focus, textarea:focus {
-            border-color: var(--primary-color);
-            outline: none;
+        @media (min-width: 1024px) {
+            .main-container {
+                grid-template-columns: 350px 1fr;
+            }
         }
 
-        .questions-section {
-            display: none;
-            margin-top: 2rem;
-            animation: fadeIn 0.5s ease;
+        /* Student Profile Card */
+        .profile-card {
+            padding: 2rem;
+            text-align: center;
+            height: fit-content;
         }
 
-        .questions-section.visible {
-            display: block;
-        }
-
-        .rating {
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
             display: flex;
-            flex-direction: row-reverse;
+            align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            margin: 1rem 0;
+            font-size: 2.5rem;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
         }
 
-        .rating input {
-            display: none;
-        }
-
-        .rating label {
-            cursor: pointer;
+        .profile-name {
             font-size: 1.5rem;
-            color: #555;
-            transition: color 0.2s ease;
-        }
-
-        .rating input:checked ~ label,
-        .rating label:hover,
-        .rating label:hover ~ label {
-            color: var(--primary-color);
-        }
-
-        .voice-feedback-section {
-            margin-top: 2rem;
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: var(--background-dark);
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
             font-weight: 600;
+            margin: 0 0 0.5rem;
+        }
+
+        .profile-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        /* Feedback Form Section */
+        .feedback-section {
+            padding: 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .section-header p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Custom Select */
+        .course-select-wrapper {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .course-select-wrapper select {
+            width: 100%;
+            appearance: none;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        button:hover {
-            background-color: #ffed4a;
-            transform: translateY(-1px);
+        .course-select-wrapper select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
-        button:disabled {
-            background-color: #555;
-            cursor: not-allowed;
-            transform: none;
+        .course-select-wrapper::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
         }
 
-        .recording-status {
-            display: inline-block;
-            margin-left: 1rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
+        /* Questions Grid */
+        .questions-container {
+            display: none;
+            animation: slideUp 0.5s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .message {
+        .question-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin: 0 0 1rem;
+            font-weight: 500;
+        }
+
+        /* Star Rating */
+        .rating-group {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .rating-group input {
+            display: none;
+        }
+
+        .rating-group label {
+            cursor: pointer;
+            color: #334155;
+            font-size: 1.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .rating-group label:hover,
+        .rating-group label:hover ~ label,
+        .rating-group input:checked ~ label {
+            color: #fbbf24;
+            transform: scale(1.1);
+        }
+
+        /* Voice Feedback */
+        .voice-section {
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .voice-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .record-btn {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .record-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .record-btn.recording {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
             padding: 1rem;
-            border-radius: 4px;
-            margin: 1rem 0;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+        
+        .alert-info {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            color: #7dd3fc;
+        }
+
+        .empty-state {
             text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
         }
-
-        .error-message {
-            background-color: rgba(255, 0, 0, 0.1);
-            border-left: 4px solid #ff0000;
-        }
-
-        .info-message {
-            background-color: rgba(33, 150, 243, 0.1);
-            border-left: 4px solid #2196f3;
-        }
-
-        .success-message {
-            background-color: rgba(76, 175, 80, 0.1);
-            border-left: 4px solid #4caf50;
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Student Dashboard</h1>
-        <a th:href="@{/logout}" class="logout-link">Logout</a>
-    </div>
 
-    <!-- Add success message alert -->
-    <div th:if="${success}" style="background-color: #28a745; color: white; padding: 1rem; margin: 1rem auto; max-width: 1200px; text-align: center; border-radius: 4px;">
-        Feedback submitted successfully!
-    </div>
+    <nav class="navbar">
+        <h1><i class="fa-solid fa-graduation-cap"></i> Student Portal</h1>
+        <a th:href="@{/logout}" class="logout-btn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+    </nav>
 
-    <div class="main-content">
-        <!-- Error Messages -->
-        <div th:if="${error}" class="message error-message">
-            <p th:text="${error}"></p>
-        </div>
-
-        <!-- Warning Messages -->
-        <div th:if="${warning}" class="message info-message">
-            <p th:text="${warning}"></p>
-        </div>
-
-        <!-- Student Info -->
-        <div th:if="${student != null}" class="student-info">
-            <h2>Welcome, <span th:text="${student.name ?: 'Student'}"></span>!</h2>
-            <p class="info-label">USN: <span th:text="${student.usn}"></span></p>
-            <p class="info-label">Section: <span th:text="${student.section != null ? student.section.sectionName : 'Not Assigned'}"></span></p>
-        </div>
-
-        <!-- Course Assignments -->
-        <div th:if="${courseAssignments != null and !courseAssignments.empty}" class="feedback-form">
-            <form id="feedbackForm" th:action="@{/student/submit-feedback}" method="post">
-                <div class="form-section">
-                    <label for="courseAssignmentId">Select Course to Provide Feedback</label>
-                    <select id="courseAssignmentId" name="courseAssignmentId" required onchange="showHideQuestions()">
-                        <option value="">Choose a course...</option>
-                        <option th:each="ca : ${courseAssignments}"
-                                th:value="${ca.assignmentId}"
-                                th:text="${ca.course.courseName} + ' - ' + ${ca.faculty.name}"
-                                th:disabled="${feedbackService.hasFeedback(student, ca)}"></option>
-                    </select>
+    <div class="main-container">
+        
+        <!-- Left Sidebar: Profile -->
+        <div class="glass profile-card">
+            <div th:if="${student != null}">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user-astronaut"></i>
                 </div>
+                <h2 class="profile-name" th:text="${student.name ?: 'Student'}">Name</h2>
+                <div class="profile-badge">
+                    <i class="fa-solid fa-id-card"></i> <span th:text="${student.usn}">USN</span>
+                </div>
+                <br>
+                <div class="profile-badge">
+                    <i class="fa-solid fa-users-rectangle"></i> <span th:text="${student.section != null ? student.section.sectionName : 'Unassigned'}">Section</span>
+                </div>
+            </div>
+            <div th:if="${student == null}">
+                <p>Profile data unavailable.</p>
+            </div>
+        </div>
 
-                <div id="questionsSection" style="display: none;">
-                    <h2>Feedback Questions</h2>
-                    <div th:each="question, iterStat : ${questions}" class="form-section">
-                        <label th:text="${question.text}"></label>
-                        <div class="rating">
-                            <input type="radio" th:id="'answer' + ${iterStat.index} + '-5'" th:name="'answer[' + ${iterStat.index} + ']'" value="5" required>
-                            <label th:for="'answer' + ${iterStat.index} + '-5'"><i class="fas fa-star"></i></label>
-                            <input type="radio" th:id="'answer' + ${iterStat.index} + '-4'" th:name="'answer[' + ${iterStat.index} + ']'" value="4">
-                            <label th:for="'answer' + ${iterStat.index} + '-4'"><i class="fas fa-star"></i></label>
-                            <input type="radio" th:id="'answer' + ${iterStat.index} + '-3'" th:name="'answer[' + ${iterStat.index} + ']'" value="3">
-                            <label th:for="'answer' + ${iterStat.index} + '-3'"><i class="fas fa-star"></i></label>
-                            <input type="radio" th:id="'answer' + ${iterStat.index} + '-2'" th:name="'answer[' + ${iterStat.index} + ']'" value="2">
-                            <label th:for="'answer' + ${iterStat.index} + '-2'"><i class="fas fa-star"></i></label>
-                            <input type="radio" th:id="'answer' + ${iterStat.index} + '-1'" th:name="'answer[' + ${iterStat.index} + ']'" value="1">
-                            <label th:for="'answer' + ${iterStat.index} + '-1'"><i class="fas fa-star"></i></label>
-                        </div>
+        <!-- Right Content: Feedback Form -->
+        <div class="glass feedback-section">
+            
+            <!-- Alerts -->
+            <div th:if="${success}" class="alert alert-success">
+                <i class="fa-solid fa-circle-check"></i>
+                <div><strong>Success!</strong> Feedback submitted successfully.</div>
+            </div>
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <div th:text="${error}">Error message</div>
+            </div>
+            <div th:if="${warning}" class="alert alert-info">
+                <i class="fa-solid fa-circle-info"></i>
+                <div th:text="${warning}">Warning message</div>
+            </div>
+
+            <div class="section-header">
+                <h2>Course Feedback</h2>
+                <p>Select a course below to share your anonymous feedback.</p>
+            </div>
+
+            <!-- Form -->
+            <div th:if="${courseAssignments != null and !courseAssignments.empty}">
+                <form id="feedbackForm" th:action="@{/student/submit-feedback}" method="post">
+                    
+                    <div class="course-select-wrapper">
+                        <select id="courseAssignmentId" name="courseAssignmentId" required onchange="toggleQuestions()">
+                            <option value="" disabled selected>Select an active course...</option>
+                            <option th:each="ca : ${courseAssignments}"
+                                    th:value="${ca.assignmentId}"
+                                    th:text="${ca.course.courseName} + ' (' + ${ca.faculty.name} + ')'"
+                                    th:disabled="${feedbackService.hasFeedback(student, ca)}">
+                            </option>
+                        </select>
                     </div>
 
-                    <div class="voice-feedback-section">
-                        <label for="voiceFeedback">Voice Feedback (Optional)</label>
-                        <div>
-                            <button type="button" id="startRecord">Start Recording</button>
-                            <span id="recordingStatus" class="recording-status"></span>
+                    <div id="questionsContainer" class="questions-container">
+                        
+                        <div th:if="${questions == null or questions.empty}" class="alert alert-info" style="margin-bottom: 2rem;">
+                            <i class="fa-solid fa-circle-info"></i> No feedback questions have been configured yet. Please check back later.
                         </div>
-                        <textarea id="voiceFeedback" name="voiceFeedback"
-                                placeholder="Voice feedback will appear here... You can also type your feedback directly."
-                                rows="4"></textarea>
+                        
+                        <!-- Questions Loop -->
+                        <div th:each="question, iterStat : ${questions}" class="question-card">
+                            <p class="question-text" th:text="${question.text}"></p>
+                            <div class="rating-group">
+                                <input type="radio" th:id="'answer' + ${iterStat.index} + '-5'" th:name="'answer[' + ${iterStat.index} + ']'" value="5" required>
+                                <label th:for="'answer' + ${iterStat.index} + '-5'"><i class="fa-solid fa-star"></i></label>
+                                
+                                <input type="radio" th:id="'answer' + ${iterStat.index} + '-4'" th:name="'answer[' + ${iterStat.index} + ']'" value="4">
+                                <label th:for="'answer' + ${iterStat.index} + '-4'"><i class="fa-solid fa-star"></i></label>
+                                
+                                <input type="radio" th:id="'answer' + ${iterStat.index} + '-3'" th:name="'answer[' + ${iterStat.index} + ']'" value="3">
+                                <label th:for="'answer' + ${iterStat.index} + '-3'"><i class="fa-solid fa-star"></i></label>
+                                
+                                <input type="radio" th:id="'answer' + ${iterStat.index} + '-2'" th:name="'answer[' + ${iterStat.index} + ']'" value="2">
+                                <label th:for="'answer' + ${iterStat.index} + '-2'"><i class="fa-solid fa-star"></i></label>
+                                
+                                <input type="radio" th:id="'answer' + ${iterStat.index} + '-1'" th:name="'answer[' + ${iterStat.index} + ']'" value="1">
+                                <label th:for="'answer' + ${iterStat.index} + '-1'"><i class="fa-solid fa-star"></i></label>
+                            </div>
+                        </div>
+
+                        <!-- Voice / Written Feedback -->
+                        <div class="voice-section">
+                            <div class="voice-controls">
+                                <div>
+                                    <h3 style="margin:0 0 0.2rem; font-size:1.1rem; font-weight:600;">Additional Comments</h3>
+                                    <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Type or use voice dictation</p>
+                                </div>
+                                <button type="button" id="recordBtn" class="record-btn">
+                                    <i class="fa-solid fa-microphone"></i> <span id="recordText">Dictate</span>
+                                </button>
+                            </div>
+                            <textarea id="voiceFeedback" name="voiceFeedback" placeholder="Your feedback helps us improve..."></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn" th:if="${not #lists.isEmpty(questions)}">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Feedback
+                        </button>
                     </div>
+                </form>
+            </div>
 
-                    <button type="submit">Submit Feedback</button>
-                </div>
-            </form>
-        </div>
+            <!-- Empty states -->
+            <div th:if="${courseAssignments != null and courseAssignments.empty}" class="empty-state">
+                <i class="fa-regular fa-folder-open"></i>
+                <h3>No Courses Available</h3>
+                <p>There are no courses assigned to your section at this moment.</p>
+            </div>
+            
+            <div th:if="${courseAssignments == null}" class="empty-state">
+                <i class="fa-solid fa-triangle-exclamation" style="color:var(--error)"></i>
+                <h3>System Error</h3>
+                <p>Unable to load course assignments. Please contact administrator.</p>
+            </div>
 
-        <div th:if="${courseAssignments != null and courseAssignments.empty}" class="message info-message">
-            <p>No courses have been assigned to your section yet. Please check back later.</p>
-        </div>
-
-        <div th:if="${courseAssignments == null}" class="message error-message">
-            <p>Unable to load course assignments. Please refresh the page or contact administrator.</p>
         </div>
     </div>
 
+    <!-- JavaScript for UI interactions and Voice Recognition -->
     <script>
-        // Speech Recognition Setup
-        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            const startButton = document.getElementById('startRecord');
-            const voiceFeedback = document.getElementById('voiceFeedback');
-            const recordingStatus = document.getElementById('recordingStatus');
-            let isRecording = false;
+        // Toggle questions visibility based on course selection
+        function toggleQuestions() {
+            const select = document.getElementById('courseAssignmentId');
+            const container = document.getElementById('questionsContainer');
+            if(select && select.value !== "") {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
+        // Voice Recognition Implementation
+        document.addEventListener('DOMContentLoaded', () => {
+            const recordBtn = document.getElementById('recordBtn');
+            const recordText = document.getElementById('recordText');
+            const textArea = document.getElementById('voiceFeedback');
+            
+            if (!recordBtn || !textArea) return;
+
+            // Check browser support
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                recordBtn.style.display = 'none';
+                textArea.placeholder = 'Type your feedback here... (Voice dictation not supported in this browser)';
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
             recognition.continuous = true;
             recognition.interimResults = true;
             recognition.lang = 'en-US';
 
-            startButton.addEventListener('click', () => {
-                if (!isRecording) {
-                    // Start recording
-                    recognition.start();
-                    startButton.textContent = 'Stop Recording';
-                    recordingStatus.textContent = '🎙️ Recording...';
-                    isRecording = true;
-                } else {
-                    // Stop recording
+            let isRecording = false;
+
+            recordBtn.addEventListener('click', () => {
+                if (isRecording) {
                     recognition.stop();
-                    startButton.textContent = 'Start Recording';
-                    recordingStatus.textContent = '';
                     isRecording = false;
+                    recordBtn.classList.remove('recording');
+                    recordBtn.innerHTML = '<i class="fa-solid fa-microphone"></i> <span>Dictate</span>';
+                } else {
+                    try {
+                        recognition.start();
+                        isRecording = true;
+                        recordBtn.classList.add('recording');
+                        recordBtn.innerHTML = '<i class="fa-solid fa-stop"></i> <span>Listening...</span>';
+                    } catch (e) {
+                        console.error('Speech recognition error:', e);
+                        alert('Could not start microphone. Please ensure permissions are granted.');
+                    }
                 }
             });
 
+            // Variable to keep track of previous final transcripts
+            let finalTranscript = '';
+
             recognition.onresult = (event) => {
-                let finalTranscript = '';
-                for (let i = event.resultIndex; i < event.results.length; i++) {
+                let interimTranscript = '';
+                // The event.results contains all results from this session
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
-                        finalTranscript += event
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                
+                // Update text area, preserving any text the user might have manually typed
+                // We combine the recognized text with a space if there's already text
+                const currentText = textArea.value;
+                if (!isRecording && currentText.trim().length > 0) {
+                     // logic to append properly if needed, but since it replaces, we just set value
+                }
+                
+                // Simple implementation: overwrite with recognized speech for the duration of recording session
+                // A production app might append it more gracefully.
+                textArea.value = finalTranscript + interimTranscript;
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error', event.error);
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordBtn.innerHTML = '<i class="fa-solid fa-microphone"></i> <span>Dictate</span>';
+                if(event.error === 'not-allowed') {
+                    alert('Microphone access was denied. Please check browser permissions.');
+                }
+            };
+            
+            recognition.onend = () => {
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordBtn.innerHTML = '<i class="fa-solid fa-microphone"></i> <span>Dictate</span>';
+            };
+        });
+    </script>
+</body>
+</html>

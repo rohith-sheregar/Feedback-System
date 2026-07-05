@@ -1,209 +1,418 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Manage Students</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students - Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #1e1e2f;
-            color: #fff;
-            padding: 40px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        h2 {
-            color: #66ccff;
+
+        .glass {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar {
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            width: 100%;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .action-card {
+            padding: 1.5rem;
+        }
+
+        .action-card h3 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.2rem;
+            color: #93c5fd;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+            display: inline-block;
             text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
         }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .danger-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .danger-btn:hover {
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Content Area */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Filters */
+        .filter-card {
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        /* Table Styles */
+        .data-card {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+        
+        .data-card h3 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.2rem;
+            color: #93c5fd;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-        th, td {
-            border: 1px solid #444;
-            padding: 10px;
             text-align: left;
         }
+
         th {
-            background-color: #333;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
         }
-        tr:nth-child(even) {
-            background-color: #2a2a3c;
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
         }
-        form {
-            background: #2a2a3c;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 600px;
-            margin: 0 auto 40px auto;
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
         }
-        label {
-            display: block;
-            margin-top: 15px;
-        }
-        input[type="text"], input[type="email"], select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border-radius: 5px;
+
+        .btn-link {
+            background: none;
             border: none;
-            font-size: 1rem;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #66ccff;
-            border: none;
-            border-radius: 5px;
-            color: black;
-            font-weight: bold;
+            color: #f87171;
+            font-size: 0.95rem;
+            font-family: inherit;
             cursor: pointer;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 500;
         }
-        button:hover {
-            background-color: #33bbff;
+        
+        .btn-link:hover {
+            color: #fca5a5;
+            text-decoration: underline;
         }
-        .btn-upload {
-            display: inline-block;
-            margin-bottom: 20px;
-            background-color: #66ccff;
-            color: black;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .btn-upload:hover {
-            background-color: #33bbff;
-        }
-        .action-btn {
-            background-color: #ff6666;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-        .action-btn:hover {
-            background-color: #ff4444;
+        
+        .empty-row {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem !important;
         }
     </style>
 </head>
 <body>
 
-<h2>Manage Students</h2>
+    <nav class="navbar">
+        <h1><i class="fa-solid fa-users-gear"></i> Manage Students</h1>
+        <div class="nav-actions">
+            <a th:href="@{/admin/dashboard}" class="nav-btn"><i class="fa-solid fa-house"></i> Home</a>
+            <a th:href="@{/logout}" class="nav-btn" style="border-color: rgba(239, 68, 68, 0.3); color: #fca5a5;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+        </div>
+    </nav>
 
-<!-- ✅ Flash message -->
-<div th:if="${message}" style="margin-bottom:20px; text-align:center; font-weight:bold; color:#00ffcc;">
-    <p th:text="${message}"></p>
-</div>
+    <div class="main-content">
+        
+        <!-- Sidebar -->
+        <div class="sidebar">
+            
+            <div th:if="${message}" class="alert">
+                <i class="fa-solid fa-circle-check"></i>
+                <div th:text="${message}"></div>
+            </div>
 
-<!-- ✅ Upload & Delete All Buttons -->
-<div style="margin-bottom: 20px;">
-    <a th:href="@{/admin/upload-students}" class="btn-upload">📤 Upload Students CSV</a>
-    <form th:action="@{/admin/students/delete-all}" method="post" style="display:inline;"
-          onsubmit="return confirm('Are you sure you want to delete ALL students?');">
-        <button type="submit" class="btn-upload" style="background-color:#ff5555;">🗑️ Delete All Students</button>
-    </form>
-</div>
+            <!-- Quick Action: Upload / Bulk Actions -->
+            <div class="action-card glass">
+                <h3><i class="fa-solid fa-file-csv"></i> Bulk Actions</h3>
+                <a th:href="@{/admin/upload-students}" class="submit-btn"><i class="fa-solid fa-upload"></i> Upload Students CSV</a>
+                
+                <form th:action="@{/admin/students/delete-all}" method="post" style="margin-top: 1rem;" onsubmit="return confirm('Are you sure you want to delete ALL students? This cannot be undone.');">
+                    <button type="submit" class="submit-btn danger-btn"><i class="fa-solid fa-trash-can"></i> Delete All Students</button>
+                </form>
+            </div>
 
-<!-- ✅ Filter Form -->
-<form method="get" th:action="@{/admin/manage-students}">
-    <label for="deptFilter">Department:</label>
-    <select name="deptId" id="deptFilter" onchange="this.form.submit()">
-        <option value="" th:selected="${deptId == null}">All Departments</option>
-        <option th:each="dept : ${depts}"
-                th:value="${dept.deptId}"
-                th:text="${dept.deptName}"
-                th:selected="${deptId == dept.deptId}"></option>
-    </select>
+            <!-- Quick Action: Add Student -->
+            <div class="action-card glass">
+                <h3><i class="fa-solid fa-user-plus"></i> Add New Student</h3>
+                <form th:action="@{/admin/students}" method="post">
+                    <div class="form-group">
+                        <label>USN (Roll No)</label>
+                        <input type="text" id="usn" name="usn" class="form-control" placeholder="1XX20XX001" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="John Doe" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="john@student.edu" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select id="deptId" name="deptId" class="form-control" required>
+                            <option value="" disabled selected>Select department...</option>
+                            <option th:each="dept : ${depts}" th:value="${dept.deptId}" th:text="${dept.deptName}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Semester</label>
+                        <select id="semester" name="semester" class="form-control" required>
+                            <option value="" disabled selected>Select semester...</option>
+                            <option th:each="sem : ${#numbers.sequence(1,8)}" th:value="${sem}" th:text="${sem}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Section</label>
+                        <select id="sectionId" name="sectionId" class="form-control" required>
+                            <option value="" disabled selected>Select section...</option>
+                            <option th:each="section : ${sections}" th:value="${section.sectionId}" th:text="${section.sectionName}"></option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn"><i class="fa-solid fa-plus"></i> Add Student</button>
+                </form>
+            </div>
+        </div>
 
-    <label for="semFilter">Semester:</label>
-    <select name="semester" id="semFilter" onchange="this.form.submit()">
-        <option value="" th:selected="${semester == null}">All Semesters</option>
-        <option th:each="sem : ${#numbers.sequence(1,8)}"
-                th:value="${sem}"
-                th:text="${sem}"
-                th:selected="${semester == sem}"></option>
-    </select>
+        <!-- Main Content -->
+        <div class="content-area">
+            
+            <!-- Global Filter -->
+            <div class="filter-card glass">
+                <form method="get" th:action="@{/admin/manage-students}" style="display: flex; gap: 1rem; align-items: flex-end; width: 100%;">
+                    
+                    <div class="form-group" style="margin: 0; flex-grow: 1;">
+                        <label>Filter by Department</label>
+                        <select name="deptId" id="deptFilter" class="form-control" onchange="this.form.submit()">
+                            <option value="" th:selected="${deptId == null}">All Departments</option>
+                            <option th:each="dept : ${depts}" th:value="${dept.deptId}" th:text="${dept.deptName}" th:selected="${deptId == dept.deptId}"></option>
+                        </select>
+                    </div>
 
-    <label for="sectionFilter">Section:</label>
-    <select name="sectionId" id="sectionFilter" onchange="this.form.submit()">
-        <option value="" th:selected="${sectionId == null}">All Sections</option>
-        <option th:each="section : ${sections}"
-                th:value="${section.sectionId}"
-                th:text="${section.sectionName}"
-                th:selected="${sectionId == section.sectionId}"></option>
-    </select>
-</form>
+                    <div class="form-group" style="margin: 0; flex-grow: 1;">
+                        <label>Filter by Semester</label>
+                        <select name="semester" id="semFilter" class="form-control" onchange="this.form.submit()">
+                            <option value="" th:selected="${semester == null}">All Semesters</option>
+                            <option th:each="sem : ${#numbers.sequence(1,8)}" th:value="${sem}" th:text="${sem}" th:selected="${semester == sem}"></option>
+                        </select>
+                    </div>
 
-<!-- ✅ Student Table -->
-<table>
-    <thead>
-    <tr>
-        <th>USN</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Department</th>
-        <th>Semester</th>
-        <th>Section</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="student : ${students}">
-        <td th:text="${student.usn}">USN</td>
-        <td th:text="${student.name}">Name</td>
-        <td th:text="${student.email}">Email</td>
-        <td th:text="${student.department != null ? student.department.deptName : 'N/A'}">Dept</td>
-        <td th:text="${student.semester}">Sem</td>
-        <td th:text="${student.section != null ? student.section.sectionName : 'N/A'}">Section</td>
-        <td>
-            <form th:action="@{/admin/students/{id}(id=${student.studentId})}" method="post" style="display:inline;">
-                <input type="hidden" name="_method" value="delete"/>
-                <button class="action-btn" type="submit" onclick="return confirm('Delete this student?');">Delete</button>
-            </form>
-        </td>
-    </tr>
-    <tr th:if="${students.size() == 0}">
-        <td colspan="7" style="text-align: center;">No students found.</td>
-    </tr>
-    </tbody>
-</table>
+                    <div class="form-group" style="margin: 0; flex-grow: 1;">
+                        <label>Filter by Section</label>
+                        <select name="sectionId" id="sectionFilter" class="form-control" onchange="this.form.submit()">
+                            <option value="" th:selected="${sectionId == null}">All Sections</option>
+                            <option th:each="section : ${sections}" th:value="${section.sectionId}" th:text="${section.sectionName}" th:selected="${sectionId == section.sectionId}"></option>
+                        </select>
+                    </div>
+                    
+                </form>
+            </div>
 
-<!-- ✅ Add Student Form -->
-<form th:action="@{/admin/students}" method="post">
-    <h3>Add New Student</h3>
+            <!-- Students Table -->
+            <div class="data-card glass">
+                <h3><i class="fa-solid fa-users"></i> Registered Students (<span th:text="${students.size()}">0</span>)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>USN</th>
+                            <th>Student Name</th>
+                            <th>Email Address</th>
+                            <th>Dept</th>
+                            <th>Sem</th>
+                            <th>Section</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="student : ${students}">
+                            <td><strong style="color:#93c5fd;" th:text="${student.usn}"></strong></td>
+                            <td th:text="${student.name}">Name</td>
+                            <td th:text="${student.email}">Email</td>
+                            <td th:text="${student.department != null ? student.department.deptName : 'N/A'}">Dept</td>
+                            <td th:text="${student.semester}">Sem</td>
+                            <td th:text="${student.section != null ? student.section.sectionName : 'N/A'}">Section</td>
+                            <td>
+                                <form th:action="@{/admin/students/{id}(id=${student.studentId})}" method="post" style="display:inline;">
+                                    <input type="hidden" name="_method" value="delete"/>
+                                    <button class="btn-link" type="submit" onclick="return confirm('Delete this student?');"><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${students.size() == 0}">
+                            <td colspan="7" class="empty-row">No students found for the selected filters.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-    <label for="usn">USN:</label>
-    <input type="text" id="usn" name="usn" required/>
-
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required/>
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required/>
-
-    <label for="deptId">Department:</label>
-    <select id="deptId" name="deptId" required>
-        <option value="" disabled selected>Select department</option>
-        <option th:each="dept : ${depts}" th:value="${dept.deptId}" th:text="${dept.deptName}"></option>
-    </select>
-
-    <label for="semester">Semester:</label>
-    <select id="semester" name="semester" required>
-        <option value="" disabled selected>Select semester</option>
-        <option th:each="sem : ${#numbers.sequence(1,8)}" th:value="${sem}" th:text="${sem}"></option>
-    </select>
-
-    <label for="sectionId">Section:</label>
-    <select id="sectionId" name="sectionId" required>
-        <option value="" disabled selected>Select section</option>
-        <option th:each="section : ${sections}" th:value="${section.sectionId}" th:text="${section.sectionName}"></option>
-    </select>
-
-    <button type="submit">Add Student</button>
-</form>
+        </div>
+    </div>
 
 </body>
 </html>

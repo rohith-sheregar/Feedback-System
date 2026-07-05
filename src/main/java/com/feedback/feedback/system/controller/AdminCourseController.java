@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 
 @Controller
@@ -21,6 +22,7 @@ public class AdminCourseController {
     @Autowired private FacultyRepository facultyRepo;
     @Autowired private SectionRepository sectionRepo;
     @Autowired private CourseAssignmentRepository assignRepo;
+    @Autowired private PasswordEncoder passwordEncoder;
 
     // Show manage courses page
     @GetMapping("/manage-courses")
@@ -97,6 +99,24 @@ public class AdminCourseController {
         s.setDepartment(deptRepo.findById(deptId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found")));
         s.setSemester(semester);
         sectionRepo.save(s);
+        return "redirect:/admin/manage-courses";
+    }
+
+    // Add faculty
+    @PostMapping("/faculty/add")
+    public String addFaculty(@RequestParam String name,
+                             @RequestParam String email,
+                             @RequestParam String password,
+                             @RequestParam Long deptId,
+                             RedirectAttributes redirectAttributes) {
+        Faculty f = new Faculty();
+        f.setName(name);
+        f.setEmail(email);
+        f.setPasswordHash(passwordEncoder.encode(password));
+        f.setDepartment(deptRepo.findById(deptId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found")));
+        facultyRepo.save(f);
+        
+        redirectAttributes.addAttribute("deptId", deptId);
         return "redirect:/admin/manage-courses";
     }
 

@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class LoginController {
 
     @GetMapping("/login")
-    public String login() {
+    public String login(Authentication auth) {
+        if (auth != null && auth.isAuthenticated()) {
+            return "redirect:/default";
+        }
         return "login";   // Thymeleaf template under src/main/resources/templates/login.html
     }
 

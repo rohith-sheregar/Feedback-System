@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <title>Feedback System - Sign In</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Feedback System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #1e90ff;
-            --hover-color: #4682b4;
-            --background-dark: #1a1a1a;
-            --card-background: #2c2c2c;
-            --text-color: #ffffff;
-            --error-color: #ff5555;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --error: #ef4444;
         }
 
         * {
@@ -21,228 +24,266 @@
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: var(--background-dark);
-            margin: 0;
-            color: var(--text-color);
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text-main);
             position: relative;
             overflow: hidden;
         }
 
-        /* Background Animation */
-        body::before {
-            content: '';
+        /* Background animated blobs */
+        .blob {
             position: absolute;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg,
-                rgba(30, 144, 255, 0.1) 0%,
-                rgba(30, 144, 255, 0) 70%);
-            animation: gradientMove 15s ease infinite;
+            filter: blur(80px);
             z-index: 0;
+            opacity: 0.5;
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(99, 102, 241, 0.3); /* Indigo */
+            top: -100px;
+            left: -100px;
+            border-radius: 50%;
+        }
+        
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(16, 185, 129, 0.2); /* Emerald */
+            bottom: -200px;
+            right: -100px;
+            border-radius: 50%;
+            animation-delay: -5s;
+        }
+        
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(139, 92, 246, 0.3); /* Purple */
+            bottom: 20%;
+            left: 20%;
+            border-radius: 50%;
+            animation-delay: -10s;
         }
 
-        @keyframes gradientMove {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, -50px) scale(1.1); }
+            66% { transform: translate(-30px, 40px) scale(0.9); }
         }
 
         .login-container {
-            width: 380px;
-            padding: 32px;
-            background: var(--card-background);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 420px;
+            padding: 3rem 2.5rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             position: relative;
             z-index: 1;
-            backdrop-filter: blur(8px);
-            animation: containerAppear 0.6s ease-out;
+            animation: containerAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes containerAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-area i {
+            font-size: 3rem;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
         }
 
         h1 {
-            text-align: center;
-            font-size: 32px;
-            margin-bottom: 16px;
-            color: var(--primary-color);
-            animation: titleAppear 0.8s ease-out;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
         }
 
-        @keyframes titleAppear {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h2 {
-            text-align: center;
-            font-size: 22px;
-            margin-bottom: 24px;
-            color: var(--text-color);
-            opacity: 0.9;
-            animation: subtitleAppear 0.8s ease-out 0.2s both;
-        }
-
-        @keyframes subtitleAppear {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 0.9;
-                transform: translateX(0);
-            }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
         .input-group {
             position: relative;
-            margin-bottom: 20px;
-            animation: inputAppear 0.8s ease-out 0.4s both;
-        }
-
-        @keyframes inputAppear {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            margin-bottom: 1.5rem;
         }
 
         .input-group i {
             position: absolute;
-            left: 15px;
+            left: 1.2rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--primary-color);
+            color: var(--text-muted);
+            font-size: 1.1rem;
             transition: all 0.3s ease;
+            pointer-events: none;
         }
 
         input {
             width: 100%;
-            padding: 15px 15px 15px 45px;
-            margin: 8px 0;
-            border: 2px solid transparent;
+            padding: 1rem 1rem 1rem 3.2rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-color);
-            font-size: 16px;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: inherit;
             transition: all 0.3s ease;
+            box-sizing: border-box;
         }
 
         input:focus {
             outline: none;
-            border-color: var(--primary-color);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 15px rgba(30, 144, 255, 0.2);
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+        }
+        
+        input:focus + i, input:not(:placeholder-shown) + i {
+            color: #60a5fa;
         }
 
         input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.3);
         }
 
-        button {
+        .submit-btn {
             width: 100%;
-            padding: 15px;
-            background: var(--primary-color);
-            color: var(--text-color);
+            padding: 1rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            color: white;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1.05rem;
             font-weight: 600;
+            font-family: inherit;
             transition: all 0.3s ease;
-            animation: buttonAppear 0.8s ease-out 0.6s both;
-            position: relative;
-            overflow: hidden;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-        @keyframes buttonAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-        }
-
-        button:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        button:hover {
-            background: var(--hover-color);
+        .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(30, 144, 255, 0.3);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
         }
 
         .error {
-            color: var(--error-color);
-            font-size: 0.9em;
-            text-align: center;
-            margin: 10px 0;
-            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #f87171;
+            font-size: 0.9rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 0.75rem 1rem;
             border-radius: 8px;
-            background: rgba(255, 85, 85, 0.1);
-            animation: errorShake 0.5s ease-in-out;
+            margin-bottom: 1.5rem;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
 
-        @keyframes errorShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        
+        .logout-msg {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #34d399;
+            font-size: 0.9rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-text {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        /* Stars Effect */
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0;
+            animation: twinkle linear infinite;
+            box-shadow: 0 0 4px #fff;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(0.5); }
         }
 
     </style>
 </head>
 <body>
+
+    <!-- Animated background blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
     <div class="login-container">
-        <h1>Feedback System</h1>
-        <h2>Sign In</h2>
-        <p th:if="${param.error}" class="error">
-            <i class="fas fa-exclamation-circle"></i>
-            Invalid username, email, or password.
-        </p>
+        
+        <div class="logo-area">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Sign in to your account</p>
+        </div>
+        
+        <!-- Error / Logout messages -->
+        <div th:if="${param.error}" class="error">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Invalid credentials. Please try again.</span>
+        </div>
+        <div th:if="${param.logout}" class="logout-msg">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>You have been successfully logged out.</span>
+        </div>
+
         <form th:action="@{/login}" method="post">
             <div class="input-group">
-                <i class="fas fa-user"></i>
                 <input
                     id="username"
                     name="username"
@@ -251,9 +292,10 @@
                     required
                     autofocus
                 />
+                <i class="fa-solid fa-user"></i>
             </div>
+            
             <div class="input-group">
-                <i class="fas fa-lock"></i>
                 <input
                     id="password"
                     name="password"
@@ -261,12 +303,45 @@
                     placeholder="Password"
                     required
                 />
+                <i class="fa-solid fa-lock"></i>
             </div>
-            <button type="submit">
-                Login <i class="fas fa-arrow-right"></i>
+            
+            <button type="submit" class="submit-btn">
+                Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>
             </button>
         </form>
+        
+        <p class="footer-text">Feedback System Portal</p>
     </div>
+
+    <!-- Star Generator Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const numStars = 150;
+            const body = document.body;
+            
+            for (let i = 0; i < numStars; i++) {
+                let star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random size between 1px and 3px
+                let size = Math.random() * 2 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                // Random position
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                
+                // Random animation duration between 3s and 8s
+                star.style.animationDuration = (Math.random() * 5 + 3) + 's';
+                
+                // Random animation delay
+                star.style.animationDelay = (Math.random() * 5) + 's';
+                
+                body.appendChild(star);
+            }
+        });
+    </script>
 </body>
 </html>
-
