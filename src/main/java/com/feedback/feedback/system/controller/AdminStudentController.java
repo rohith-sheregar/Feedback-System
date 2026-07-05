@@ -125,6 +125,9 @@ public class AdminStudentController {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
+            int savedCount = 0;
+            int skippedCount = 0;
+
             for (CSVRecord record : csvParser) {
                 String usn = record.get("usn").trim();
                 String name = record.get("name").trim();
@@ -135,6 +138,7 @@ public class AdminStudentController {
                 String sectionName = record.get("section").trim(); // section name from CSV
 
                 if (studentRepo.existsByUsn(usn) || studentRepo.existsByEmail(email)) {
+                    skippedCount++;
                     continue; // Skip duplicates
                 }
 
@@ -143,6 +147,7 @@ public class AdminStudentController {
 
                 if (departmentOpt.isEmpty() || sectionOpt.isEmpty()) {
                     logger.warn("Skipping student {} due to missing department or section.", usn);
+                    skippedCount++;
                     continue;
                 }
 
@@ -156,9 +161,14 @@ public class AdminStudentController {
                 s.setSection(sectionOpt.get());
 
                 studentRepo.save(s);
+                savedCount++;
             }
 
-            redirectAttributes.addFlashAttribute("message", "✅ Students uploaded successfully.");
+            if (skippedCount > 0) {
+                redirectAttributes.addFlashAttribute("message", "✅ " + savedCount + " students uploaded. (" + skippedCount + " skipped due to duplicates or missing sections/departments).");
+            } else {
+                redirectAttributes.addFlashAttribute("message", "✅ " + savedCount + " students uploaded successfully.");
+            }
             return "redirect:/admin/manage-students";
         } catch (Exception e) {
             e.printStackTrace();
