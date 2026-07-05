@@ -1,5 +1,7 @@
 # 🎓 College Feedback System
 
+**🚀 Live Demo:** [https://feedback-system-w0gj.onrender.com](https://feedback-system-w0gj.onrender.com)
+
 A full-stack, enterprise-grade Feedback Management System built with Java Spring Boot, Thymeleaf, and MySQL. It features a modern, responsive Glassmorphism UI and a robust Role-Based Access Control (RBAC) architecture for processing academic feedback.
 
 ---
@@ -90,4 +92,5 @@ http://localhost:8080/login
 ---
 
 ## 🌐 Live Deployment
-*(Deployment URL goes here once hosted on Render/Aiven)*
+The application is currently hosted and live at:
+**[https://feedback-system-w0gj.onrender.com](https://feedback-system-w0gj.onrender.com)**
