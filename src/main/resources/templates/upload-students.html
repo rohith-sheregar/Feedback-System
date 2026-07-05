@@ -161,8 +161,8 @@
                 <input type="file" name="file" accept=".csv" class="file-upload-input" required />
             </div>
 
-            <button type="submit" class="submit-btn">
-                <i class="fa-solid fa-upload"></i> Process CSV Upload
+            <button type="submit" class="submit-btn" id="uploadBtn">
+                <i class="fa-solid fa-upload" id="uploadIcon"></i> <span id="uploadText">Process CSV Upload</span>
             </button>
             
         </form>
@@ -172,6 +172,19 @@
         </a>
 
     </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function() {
+            var btn = document.getElementById('uploadBtn');
+            var icon = document.getElementById('uploadIcon');
+            var text = document.getElementById('uploadText');
+            
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+            icon.className = 'fa-solid fa-circle-notch fa-spin';
+            text.innerText = 'Uploading & Processing...';
+        });
+    </script>
 
 </body>
 </html>
